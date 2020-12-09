@@ -82,14 +82,31 @@ namespace test3.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(string ImgUrl, string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            if (ModelState.IsValid)
+
+            if (ImgUrl == null || ImgUrl.Length == 0)
             {
-                var user = new AppUser { UserName = Input.Email, Email = Input.Email };
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                return Page();
+            }
+            var img = Convert.FromBase64String(ImgUrl);
+            Input.Photo = img;
+            var user = new AppUser
+            { 
+                UserName = Input.Email, 
+                Email = Input.Email,
+                Name = Input.Name,
+                Photo = Input.Photo,
+                LinkedIn = Input.LinkedIn
+
+            };
+
+  /*           ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+           if (ModelState.IsValid)
+            {
+                var user = new AppUser { UserName = Input.Email, Email = Input.Email };*/
+            var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
@@ -119,7 +136,7 @@ namespace test3.Areas.Identity.Pages.Account
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
-            }
+            
 
             // If we got this far, something failed, redisplay form
             return Page();
