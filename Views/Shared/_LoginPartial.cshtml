@@ -8,7 +8,7 @@
 	{
 		var user = await UserManager.GetUserAsync(User);
 		<li class="nav-item">
-			<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @user.Name!</a>
+			<a class="nav-link btn btn-outline-danger" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @user.Name!</a>
 		</li>
 		<li class="nav-item">
 			<img src="data:image/png;base64,@Convert.ToBase64String(@user.Photo)" width="45" />

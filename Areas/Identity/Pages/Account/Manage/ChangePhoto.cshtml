@@ -5,4 +5,78 @@
 }
 
 
-<h2>Update Photo</h2>
+<div class="row">
+	<div class="col-md-4">
+		<form method="post">
+			<h4 class="btn btn-warning">Update Profile Photo</h4>
+			<div class="form-group">
+				<label>Update Photo</label>
+				<input type="file" id="upload" class="form-control border-0" required />
+				<input type="hidden" id="ImgUrl" name="ImgUrl" value="" class="form-control border-0" required />
+				<span asp-validation-for="Input.Photo" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<div id="upload-demo" style="width:350px"></div>
+			</div>
+
+			<button type="submit" class="btn btn-primary upload-result">Update</button>
+		</form>
+	</div>
+</div>
+
+
+
+<script>
+	$uploadCrop = $('#upload-demo').croppie({
+		enableExif: true,
+		viewport: {
+			width: 240,
+			height: 240,
+			type: 'circle'
+		},
+		boundary: {
+			width: 300,
+			height: 300
+		}
+	});
+
+	$('#upload').on('change', function () {
+		var reader = new FileReader();
+		reader.onload = function (e) {
+			$uploadCrop.croppie('bind', {
+				url: e.target.result
+			}).then(function () {
+				console.log('jQuery bind complete');
+			})
+		}
+		reader.readAsDataURL(this.files[0]);
+	});
+
+
+
+	$('.upload-result').on('click', function (ev) {
+		$uploadCrop.croppie('result', {
+			type: 'canvas',
+			size: 'viewport'
+		}).then(function (resp) {
+			var img1 = resp.substring(22);
+			$("#ImgUrl").val(img1);
+			console.log("Trimmed Image: " + img1)
+			var myData = new FormData(this);
+
+			$.ajax(
+				{
+					url: "/",
+					type: "POST",
+					data: myData,
+					cache: false,
+					contentType: false,
+					success: function (data) {
+
+					}
+				}
+			);
+		})
+	})
+
+</script>

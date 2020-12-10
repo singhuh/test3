@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using test3.Areas.Identity.Models;
+using test3.Models;
 
 namespace test3.Data
 {
@@ -13,5 +14,6 @@ namespace test3.Data
             : base(options)
         {
         }
+        public DbSet<Resume> Resumes { get; set; }
     }
 }
