@@ -108,14 +108,61 @@ namespace test3.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ResumeID,UserId,Description,ResumeFile")] Resume resume)
+        public async Task<IActionResult> Edit(long id, [Bind("ResumeID,UserId,Description,ResumeFile")] Resume resume, IFormFile file)
         {
             if (id != resume.ResumeID)
             {
                 return NotFound();
             }
+            var currentresume = await _context.Resumes.FindAsync(id);
+            if (file == null || file.Length == 0)
+            {
+                currentresume.ResumeID = id;
+                currentresume.Description = resume.Description;
+                currentresume.UserId = resume.UserId;
+                currentresume.ResumeFile = currentresume.ResumeFile;
 
-            if (ModelState.IsValid)
+                _context.Update(currentresume);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index", "Resumes");
+
+            }
+            else
+            {
+                var ext = Path.GetExtension(file.FileName);
+                var newFileName = "resumes-modified" + DateTime.Now.ToString("yymm") + ext;
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Resumes", newFileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+
+
+                var RelativePath = currentresume.ResumeFile;
+                var AbsolutePath = "wwwroot" + RelativePath;
+
+                if (System.IO.File.Exists(AbsolutePath))
+                {
+                    System.IO.File.Delete(AbsolutePath);
+                }
+
+
+                currentresume.ResumeID = id;
+                currentresume.Description = resume.Description;
+                currentresume.UserId = resume.UserId;
+                currentresume.ResumeFile = "/Resumes/" + newFileName;
+
+
+
+
+                _context.Update(currentresume);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index", "Resumes");
+            }
+
+          /*  if (ModelState.IsValid)
             {
                 try
                 {
@@ -135,7 +182,7 @@ namespace test3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(resume);
+            return View(resume);*/
         }
 
         // GET: Resumes/Delete/5
