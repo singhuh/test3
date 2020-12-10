@@ -20,8 +20,9 @@ namespace test3.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
@@ -62,14 +63,12 @@ namespace test3.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-            [Key]
             [Required(ErrorMessage = "M Number is required")]
-            [RegularExpression(@"\d{8}")]
-            [Display(Name = "M Number")]
-            public int MNumber { get; set; }
+            [RegularExpression(@"M\d{8}")]
+            [Display(Name = "M-Number")]
+            public string MNumber { get; set; }
 
             public string Name { get; set; }
-            public string E_mail { get; set; }
             [Display(Name = "Personal LinkedIn Url")]
             public string LinkedIn { get; set; }
             public string Resume { get; set; }
