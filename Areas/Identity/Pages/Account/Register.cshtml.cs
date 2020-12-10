@@ -21,7 +21,6 @@ namespace test3.Areas.Identity.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
