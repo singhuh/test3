@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using test3.Areas.Identity.Models;
 using test3.Data;
 using test3.Models;
 
@@ -17,16 +19,31 @@ namespace test3.Controllers
     public class ResumesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public ResumesController(ApplicationDbContext context)
+        public ResumesController(ApplicationDbContext context, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // GET: Resumes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Resumes.ToListAsync());
+
+            var LoginUserId = _userManager.GetUserId(User);
+            if (LoginUserId !=null)
+            {
+                var myResumes = _context.Resumes.Where(m => m.UserId == LoginUserId);
+                return View(await myResumes.ToListAsync());
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+/*            return View(await _context.Resumes.ToListAsync());*/
         }
 
         // GET: Resumes/Details/5
